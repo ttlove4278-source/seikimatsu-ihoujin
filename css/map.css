@@ -1,0 +1,228 @@
+.map-view {
+  position: fixed; inset: 0;
+  background: #0a0a0c;
+  z-index: 550;
+  overflow: hidden;
+  color: var(--paper);
+}
+
+.map-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 20px 40px;
+  background: linear-gradient(180deg, rgba(10,10,12,0.95), transparent);
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 5;
+}
+.map-title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 0.3em;
+}
+.map-title span {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  margin-right: 20px;
+}
+.map-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+
+.map-canvas {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(200,169,106,0.04) 0, rgba(200,169,106,0.04) 1px, transparent 2px, transparent 40px),
+    repeating-linear-gradient(90deg, rgba(200,169,106,0.04) 0, rgba(200,169,106,0.04) 1px, transparent 2px, transparent 40px),
+    radial-gradient(ellipse at 30% 60%, rgba(198,93,46,0.15), transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(139,26,26,0.12), transparent 50%),
+    linear-gradient(135deg, #14110a 0%, #0a0a0c 100%);
+}
+
+/* 地图装饰：海浪 */
+.map-canvas::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0; height: 35%;
+  background:
+    repeating-linear-gradient(90deg, rgba(106,139,198,0.06) 0 80px, transparent 80px 160px),
+    linear-gradient(180deg, transparent, rgba(40,60,90,0.4) 70%);
+  pointer-events: none;
+}
+
+.map-canvas::after {
+  content: '櫂 町';
+  position: absolute;
+  right: 6%; top: 15%;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 200px;
+  color: rgba(232,226,212,0.04);
+  letter-spacing: 0.3em;
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* 地图标记点 */
+.map-pin {
+  position: absolute;
+  cursor: pointer;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  transition: all 0.4s cubic-bezier(.16,1,.3,1);
+}
+.map-pin .dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--blood);
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 20px rgba(139,26,26,0.8);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(139,26,26,0.8); }
+  50%      { transform: scale(1.2); box-shadow: 0 0 32px rgba(139,26,26,1); }
+}
+.map-pin.event .dot { background: var(--gold); box-shadow: 0 0 20px rgba(200,169,106,0.8); }
+.map-pin.event .dot { animation: pulseGold 2s infinite; }
+@keyframes pulseGold {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(200,169,106,0.8); }
+  50%      { transform: scale(1.3); box-shadow: 0 0 32px rgba(200,169,106,1); }
+}
+.map-pin.visited .dot { background: #666; animation: none; box-shadow: none; }
+.map-pin.locked .dot { background: #333; border-color: #555; animation: none; }
+.map-pin.locked { cursor: not-allowed; }
+
+.map-pin .label {
+  position: absolute;
+  left: 24px; top: -6px;
+  white-space: nowrap;
+  background: rgba(10,10,12,0.92);
+  border-left: 2px solid var(--gold);
+  padding: 6px 14px 6px 12px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+}
+.map-pin .label .en {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.map-pin:hover:not(.locked) {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+.map-pin:hover:not(.locked) .label {
+  background: var(--blood);
+  border-left-color: var(--paper);
+}
+
+/* 地图信息面板 */
+.map-info {
+  position: absolute;
+  bottom: 30px; left: 30px; right: 30px;
+  background: rgba(10,10,12,0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(200,169,106,0.3);
+  border-top: 3px solid var(--gold);
+  padding: 22px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 30px;
+  align-items: center;
+  z-index: 4;
+}
+.map-info .desc {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 15px;
+  line-height: 1.9;
+  letter-spacing: 0.08em;
+  color: #cfc8b8;
+}
+.map-info .loc-name {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+  margin-bottom: 6px;
+  display: block;
+}
+.map-info .loc-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-right: 14px;
+}
+.map-info .enter-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 14px 34px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+.map-info .enter-btn:hover { background: var(--gold); color: var(--ink); }
+.map-info.hidden { opacity: 0; pointer-events: none; }
+
+.map-back {
+  position: absolute;
+  top: 26px; right: 40px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 8px 22px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 6;
+}
+.map-back:hover { background: var(--gold); color: var(--ink); }
+
+/* 罗盘装饰 */
+.map-compass {
+  position: absolute;
+  left: 30px; bottom: 140px;
+  width: 80px; height: 80px;
+  border: 1px solid rgba(200,169,106,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--gold);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.map-compass::before {
+  content: 'N';
+  position: absolute; top: 6px;
+  font-size: 12px;
+}
+.map-compass::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  width: 2px; height: 30px;
+  background: linear-gradient(180deg, var(--blood), transparent);
+  transform: translateX(-50%);
+}
