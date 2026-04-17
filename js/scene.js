@@ -8,6 +8,7 @@ const SCENE = {
   hide() {
     document.getElementById('scene').classList.add('hidden');
     document.getElementById('menu').classList.remove('hidden');
+    SAVE.refreshUI();
   },
   header(title, sub) {
     return `
@@ -18,24 +19,40 @@ const SCENE = {
     `;
   },
 
-  // 01 序章
-  prologue() {
-    this.show(`
-      ${this.header('序章・覚醒', '01')}
-      <div class="scene-body">
-        <div class="prologue-wrap">
-          <div class="prologue-date">1999 · 07 · 13 — TUESDAY</div>
-          <h1 class="prologue-title">異郷人、覚醒。</h1>
-          <div class="prose">${DATA.prologue}</div>
-          <div class="prologue-continue">
-            <button onclick="SCENE.hide()">— 続く —</button>
-          </div>
+  // 章节选择
+  chapters() {
+    const cards = Object.values(CHAPTERS).filter(c => c.num).map((c, i) => {
+      const prevId = i > 0 ? Object.values(CHAPTERS)[i-1].id : null;
+      const locked = prevId ? !SAVE.state.completedChapters.includes(prevId) : false;
+      const completed = SAVE.state.completedChapters.includes(c.id);
+      return `
+        <div class="chapter-card ${locked ? 'locked' : ''}" data-id="${c.id}" data-num="${i+1}">
+          ${locked ? '<div class="chapter-lock">🔒 LOCKED</div>' : ''}
+          ${completed ? '<div class="chapter-lock" style="color:var(--gold)">✓ 既読</div>' : ''}
+          <div class="ch-num">${c.num}</div>
+          <h3>${c.title}</h3>
+          <div class="ch-sub">${c.sub}</div>
+          <div class="ch-desc">${c.desc}</div>
+          <div class="ch-date">${c.date}</div>
         </div>
+      `;
+    }).join('');
+    this.show(`
+      ${this.header('章を選ぶ', '01')}
+      <div class="scene-body">
+        <div class="chapters-wrap">${cards}</div>
       </div>
     `);
+    document.querySelectorAll('.chapter-card').forEach(el => {
+      if (el.classList.contains('locked')) return;
+      el.onclick = () => {
+        const id = el.dataset.id;
+        this.hide();
+        VN.play(id);
+      };
+    });
   },
 
-  // 02 角色名鉴
   characters() {
     const cards = DATA.characters.map(c => `
       <div class="char-card" data-kanji="${c.kanji}" style="--accent:${c.accent}" onclick="SCENE.charDetail('${c.id}')">
@@ -52,7 +69,7 @@ const SCENE = {
       </div>
     `).join('');
     this.show(`
-      ${this.header('登場人物', '02')}
+      ${this.header('登場人物', '03')}
       <div class="scene-body">
         <div class="char-grid">${cards}</div>
       </div>
@@ -92,7 +109,6 @@ const SCENE = {
     document.body.appendChild(modal);
   },
 
-  // 03 用语集
   codex() {
     const list = DATA.codex.map(e => `
       <div class="codex-entry">
@@ -103,15 +119,56 @@ const SCENE = {
       </div>
     `).join('');
     this.show(`
-      ${this.header('用語集', '03')}
+      ${this.header('用語集', '04')}
       <div class="scene-body">
         <div class="codex-grid">${list}</div>
       </div>
     `);
   },
 
-  // 04 命题展开·战斗
-  battle() {
-    BATTLE.start();
+  saveLoad() {
+    const slots = SAVE.state.slots.map((s, i) => {
+      if (!s) {
+        return `
+          <div class="save-slot empty">
+            <div class="slot-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="slot-info">
+              <div class="title">—— EMPTY SLOT ——</div>
+              <div class="meta">未記録</div>
+            </div>
+            <div class="slot-actions">
+              <button onclick="SAVE.saveSlot(${i});SCENE.saveLoad()">SAVE</button>
+            </div>
+          </div>
+        `;
+      }
+      const ch = CHAPTERS[s.chapter];
+      const d = new Date(s.savedAt);
+      return `
+        <div class="save-slot">
+          <div class="slot-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="slot-info">
+            <div class="title">${ch ? ch.title : '—'}</div>
+            <div class="meta">
+              記録: ${d.toLocaleString('ja-JP')}<br>
+              既読章: ${s.completedChapters.length}/4 · 結晶: ${s.unlockedCrystals.length}/${CRYSTALS.length}<br>
+              死亡回数: ${s.deathCount} 回
+            </div>
+          </div>
+          <div class="slot-actions">
+            <button onclick="SAVE.saveSlot(${i});SCENE.saveLoad()">OVERWRITE</button>
+            <button onclick="if(SAVE.loadSlot(${i})){alert('ロードしました');SCENE.saveLoad()}">LOAD</button>
+            <button class="danger" onclick="if(confirm('削除しますか？')){SAVE.deleteSlot(${i});SCENE.saveLoad()}">DEL</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    this.show(`
+      ${this.header('SAVE / LOAD', '06')}
+      <div class="scene-body">
+        <div class="save-wrap">${slots}</div>
+      </div>
+    `);
   }
 };
