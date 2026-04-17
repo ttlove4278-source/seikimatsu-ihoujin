@@ -1,0 +1,436 @@
+.vn {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 600;
+  overflow: hidden;
+  font-family: 'Shippori Mincho', serif;
+}
+
+.vn-bg {
+  position: absolute; inset: 0;
+  transition: all 1.2s cubic-bezier(.16,1,.3,1);
+  background-size: cover;
+  background-position: center;
+}
+
+.vn-filter {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  transition: all 1s;
+}
+.vn-filter.dusk    { background: linear-gradient(180deg, rgba(255,120,60,0.25), rgba(50,20,80,0.35)); }
+.vn-filter.night   { background: linear-gradient(180deg, rgba(20,30,80,0.55), rgba(5,8,25,0.75)); }
+.vn-filter.dawn    { background: linear-gradient(180deg, rgba(200,140,180,0.3), rgba(100,120,160,0.3)); }
+.vn-filter.hospital{ background: linear-gradient(180deg, rgba(200,220,230,0.2), rgba(150,180,190,0.3)); }
+.vn-filter.fever   { background: radial-gradient(circle at 50% 50%, rgba(255,80,40,0.3), rgba(80,10,10,0.5)); }
+.vn-filter.none    { background: transparent; }
+
+.vn-noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+  opacity: 0.08;
+  mix-blend-mode: screen;
+  animation: vnNoise 0.25s steps(4) infinite;
+  pointer-events: none;
+}
+@keyframes vnNoise {
+  0% { transform: translate(0,0); }
+  25%{ transform: translate(-3px,2px); }
+  50%{ transform: translate(2px,-2px); }
+  75%{ transform: translate(-1px,3px); }
+  100%{transform: translate(2px,1px); }
+}
+
+.vn-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+  pointer-events: none;
+}
+
+/* 场景名字（左上角章节卡） */
+.vn-place {
+  position: absolute;
+  top: 28px; left: 36px;
+  display: flex; align-items: center; gap: 14px;
+  z-index: 5;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--paper);
+  letter-spacing: 0.3em;
+  opacity: 0;
+  animation: placeFade 1.2s ease forwards;
+}
+@keyframes placeFade {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 0.85; transform: translateX(0); }
+}
+.vn-place .deco { width: 30px; height: 1px; background: var(--gold); }
+.vn-place .jp { font-family: 'Noto Serif JP', serif; font-size: 14px; letter-spacing: 0.4em; }
+.vn-place .en { font-style: italic; font-size: 12px; opacity: 0.7; }
+.vn-place .time { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); }
+
+/* 角色立绘（文字剪影） */
+.vn-chars {
+  position: absolute;
+  bottom: 260px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 100px;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 2;
+}
+.vn-char {
+  width: 160px; height: 360px;
+  position: relative;
+  transition: all 0.8s cubic-bezier(.16,1,.3,1);
+  opacity: 0;
+  transform: translateY(40px);
+}
+.vn-char.show { opacity: 1; transform: translateY(0); }
+.vn-char.dim { opacity: 0.35; filter: grayscale(1); }
+.vn-char.speak { transform: translateY(-10px); }
+.vn-char-silh {
+  width: 100%; height: 100%;
+  clip-path: polygon(42% 0%, 58% 0%, 68% 18%, 64% 32%, 78% 55%, 75% 100%, 25% 100%, 22% 55%, 36% 32%, 32% 18%);
+  background: linear-gradient(180deg, transparent 0%, var(--silh-color, #4a5a6a) 80%, rgba(0,0,0,0.9) 100%);
+}
+.vn-char-name {
+  position: absolute;
+  bottom: -32px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: var(--paper);
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+/* 对话框 */
+.vn-dialog {
+  position: absolute;
+  bottom: 40px; left: 40px; right: 40px;
+  background: linear-gradient(180deg, rgba(10,10,12,0.7), rgba(10,10,12,0.95));
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(200,169,106,0.4);
+  border-left: 3px solid var(--blood);
+  padding: 32px 56px 28px;
+  min-height: 180px;
+  z-index: 8;
+  box-shadow: 0 -20px 40px rgba(0,0,0,0.5);
+}
+.vn-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 40px; height: 40px;
+  border-top: 2px solid var(--gold);
+  border-left: 2px solid var(--gold);
+}
+.vn-dialog::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 40px; height: 40px;
+  border-bottom: 2px solid var(--gold);
+  border-right: 2px solid var(--gold);
+}
+
+.vn-speaker {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 16px;
+}
+.vn-speaker::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(200,169,106,0.4), transparent);
+}
+.vn-speaker.narrator { color: #aaa; font-weight: 400; font-size: 14px; font-style: italic; letter-spacing: 0.4em; }
+.vn-speaker.think    { color: #a8c5e0; font-style: italic; }
+
+.vn-text {
+  font-size: 18px;
+  line-height: 2.2;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  min-height: 72px;
+}
+.vn-text.think { color: #cfd8e6; font-style: italic; }
+.vn-text.narrator { color: #bbb; font-style: italic; font-size: 16px; }
+
+.vn-next {
+  position: absolute;
+  right: 40px; bottom: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  animation: nextPulse 1.2s ease-in-out infinite;
+}
+@keyframes nextPulse {
+  0%, 100% { opacity: 0.4; transform: translateX(0); }
+  50%      { opacity: 1; transform: translateX(6px); }
+}
+
+/* 选项 */
+.vn-choices {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.vn-choices.show { opacity: 1; pointer-events: auto; }
+.vn-choices-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 12px;
+}
+.vn-choice {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--paper);
+  padding: 20px 48px;
+  font-family: 'Shippori Mincho', serif;
+  font-size: 17px;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.4s;
+  min-width: 520px;
+  text-align: left;
+  position: relative;
+}
+.vn-choice::before {
+  content: '◇';
+  margin-right: 14px;
+  color: var(--blood);
+  transition: 0.3s;
+}
+.vn-choice:hover {
+  background: var(--blood);
+  border-color: var(--blood);
+  transform: translateX(10px);
+  box-shadow: -10px 0 0 rgba(139,26,26,0.3);
+}
+.vn-choice:hover::before { color: var(--paper); transform: rotate(45deg); }
+.vn-choice .hint {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  margin-top: 6px;
+  opacity: 0.7;
+}
+.vn-choice:hover .hint { color: rgba(255,255,255,0.8); }
+
+/* 特殊演出：全屏文字、黑屏过渡 */
+.vn-blackout {
+  position: absolute; inset: 0;
+  background: #000;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s;
+}
+.vn-blackout.show { opacity: 1; pointer-events: auto; }
+
+.vn-fullscreen-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 25;
+  background: rgba(0,0,0,0.85);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s;
+}
+.vn-fullscreen-text.show { opacity: 1; pointer-events: auto; cursor: pointer; }
+.vn-fullscreen-text .big {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: clamp(40px, 7vw, 90px);
+  letter-spacing: 0.4em;
+  color: var(--paper);
+  text-shadow: 4px 4px 0 var(--blood);
+  text-align: center;
+  line-height: 1.5;
+}
+.vn-fullscreen-text .sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 20px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-top: 28px;
+  text-align: center;
+}
+
+/* 记忆闪回滤镜 */
+.vn.flashback .vn-bg { filter: sepia(0.7) contrast(1.1) brightness(0.8); }
+.vn.flashback .vn-dialog { border-left-color: var(--gold); }
+.vn.flashback .vn-speaker { color: #d9c89a; }
+
+/* 日期/章节标题闪现 */
+.vn-chapter-card {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  background: #000;
+  z-index: 40;
+  animation: chapterCard 4s ease forwards;
+  pointer-events: none;
+}
+@keyframes chapterCard {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.vn-chapter-card .ch-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 28px;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+.vn-chapter-card .ch-title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: clamp(60px, 9vw, 120px);
+  letter-spacing: 0.25em;
+  color: var(--paper);
+  text-shadow: 6px 6px 0 var(--blood);
+}
+.vn-chapter-card .ch-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  color: var(--paper);
+  margin-top: 24px;
+  opacity: 0.75;
+}
+.vn-chapter-card .ch-date {
+  position: absolute;
+  bottom: 15%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+}
+
+/* 控制栏 */
+.vn-controls {
+  position: absolute;
+  top: 24px; right: 32px;
+  display: flex; gap: 10px;
+  z-index: 10;
+}
+.vn-btn {
+  background: rgba(10,10,12,0.7);
+  border: 1px solid rgba(200,169,106,0.4);
+  color: var(--paper);
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: 0.3s;
+  backdrop-filter: blur(6px);
+}
+.vn-btn:hover { background: var(--gold); color: var(--ink); }
+
+/* 背景场景（纯CSS） */
+.bg-riverside {
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(255,180,120,0.5) 0%, transparent 50%),
+    linear-gradient(180deg, #e8ad75 0%, #b85a3a 40%, #4a2a3a 75%, #1a0f20 100%);
+}
+.bg-classroom {
+  background:
+    linear-gradient(180deg, #c9b890 0%, #8a7655 60%, #3a2d20 100%);
+}
+.bg-library {
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(200,150,80,0.3), transparent 60%),
+    linear-gradient(180deg, #2a1f18 0%, #140a08 100%);
+}
+.bg-hospital {
+  background:
+    linear-gradient(180deg, #d6d8c5 0%, #a5a89a 60%, #5a5d55 100%);
+}
+.bg-harbor {
+  background:
+    linear-gradient(180deg, #35455e 0%, #6a7a94 40%, #a8a095 70%, #3a3530 100%);
+}
+.bg-street {
+  background:
+    linear-gradient(180deg, #2a3040 0%, #4a5060 30%, #806050 70%, #2a1a18 100%);
+}
+.bg-cemetery {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(120,80,60,0.3), transparent 60%),
+    linear-gradient(180deg, #4a3a38 0%, #2a1f1e 60%, #0a0508 100%);
+}
+.bg-tunnel {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(180,100,60,0.25) 0%, rgba(40,20,15,0.9) 40%, #000 100%);
+}
+.bg-rooftop {
+  background:
+    linear-gradient(180deg, #1a2a4a 0%, #3a4a6a 40%, #9a6a4a 70%, #2a1a1a 100%);
+}
+.bg-abstract {
+  background:
+    radial-gradient(circle at 30% 70%, rgba(200,169,106,0.3), transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(139,26,26,0.3), transparent 50%),
+    #050508;
+}
+
+/* 背景装饰元素 */
+.bg-cicada-deco::after {
+  content: '蝉';
+  position: absolute;
+  right: 8%; top: 12%;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 240px;
+  font-weight: 900;
+  color: rgba(255,220,180,0.08);
+  line-height: 1;
+  pointer-events: none;
+}
+.bg-moon-deco::before {
+  content: '';
+  position: absolute;
+  right: 12%; top: 15%;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f0e8c8 30%, transparent 70%);
+  box-shadow: 0 0 80px rgba(240,232,200,0.4);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .vn-chars { gap: 40px; bottom: 220px; }
+  .vn-char { width: 100px; height: 240px; }
+  .vn-dialog { padding: 22px 28px; }
+  .vn-choice { min-width: 0; width: 90vw; padding: 16px 20px; }
+}
