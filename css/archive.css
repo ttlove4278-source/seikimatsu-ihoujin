@@ -1,0 +1,351 @@
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+.crystal-card {
+  padding: 28px 24px;
+  background: linear-gradient(145deg, #141820 0%, #080808 100%);
+  border: 1px solid rgba(200,169,106,0.25);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.4s cubic-bezier(.16,1,.3,1);
+  min-height: 240px;
+}
+.crystal-card.locked {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.crystal-card:hover:not(.locked) {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 10px 30px rgba(200,169,106,0.2);
+}
+.crystal-shape {
+  width: 80px; height: 80px;
+  margin: 0 auto 20px;
+  position: relative;
+  filter: drop-shadow(0 0 20px var(--glow, rgba(200,169,106,0.4)));
+}
+.crystal-shape::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--c, #c8a96a), var(--c2, #8b1a1a));
+  clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+  animation: crystalRot 8s linear infinite;
+  opacity: 0.8;
+}
+.crystal-shape::after {
+  content: '';
+  position: absolute; inset: 10%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+  clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+  animation: crystalRot 6s linear infinite reverse;
+}
+@keyframes crystalRot {
+  to { transform: rotate(360deg); }
+}
+.crystal-card.locked .crystal-shape { filter: grayscale(1) brightness(0.3); }
+.crystal-card.locked .crystal-shape::before, .crystal-card.locked .crystal-shape::after { animation: none; }
+
+.crystal-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 6px;
+}
+.crystal-name {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  text-align: center;
+  color: var(--paper);
+  margin-bottom: 6px;
+}
+.crystal-source {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+.crystal-excerpt {
+  padding-top: 14px;
+  border-top: 1px dashed rgba(200,169,106,0.25);
+  font-size: 13px;
+  line-height: 1.9;
+  color: #aaa498;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+.crystal-card.locked .crystal-name,
+.crystal-card.locked .crystal-source,
+.crystal-card.locked .crystal-excerpt {
+  filter: blur(3px);
+}
+
+/* 结晶详情弹窗 */
+.crystal-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+  animation: fadeIn 0.4s ease;
+}
+.crystal-modal .cm-inner {
+  max-width: 720px;
+  width: 100%;
+  background: linear-gradient(145deg, #12151d, #0a0a0c);
+  border: 1px solid var(--gold);
+  padding: 56px 60px;
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.crystal-modal .close {
+  position: absolute;
+  top: 16px; right: 24px;
+  background: transparent; border: none;
+  color: var(--paper);
+  font-size: 28px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.crystal-modal .close:hover { color: var(--blood); transform: rotate(90deg); }
+
+.cm-crystal {
+  width: 140px; height: 140px;
+  margin: 0 auto 28px;
+  position: relative;
+  filter: drop-shadow(0 0 30px var(--glow, rgba(200,169,106,0.6)));
+}
+.cm-crystal::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--c, #c8a96a), var(--c2, #8b1a1a));
+  clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+  animation: crystalRot 10s linear infinite;
+}
+.cm-crystal::after {
+  content: '';
+  position: absolute; inset: 12%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
+  clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+}
+
+.cm-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.cm-header .id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+}
+.cm-header h2 {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 40px;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+  margin: 10px 0 8px;
+}
+.cm-header .source {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+
+.cm-section h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(200,169,106,0.3);
+  padding-bottom: 8px;
+  margin: 28px 0 14px;
+}
+.cm-section p {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 15px;
+  line-height: 2.1;
+  color: #d0c8b8;
+  letter-spacing: 0.06em;
+}
+.cm-text {
+  padding: 24px 28px;
+  background: rgba(200,169,106,0.06);
+  border-left: 3px solid var(--gold);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 2.2;
+  color: var(--paper);
+  letter-spacing: 0.08em;
+  margin: 20px 0;
+}
+
+/* 存档界面 */
+.save-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.save-slot {
+  background: linear-gradient(135deg, rgba(20,22,30,0.85), rgba(10,10,12,0.95));
+  border: 1px solid rgba(200,169,106,0.25);
+  border-left: 3px solid var(--blood);
+  padding: 24px 30px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+  transition: 0.3s;
+}
+.save-slot:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.save-slot .slot-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 48px;
+  color: var(--gold);
+  line-height: 1;
+  min-width: 60px;
+}
+.save-slot .slot-info .title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--paper);
+  margin-bottom: 6px;
+}
+.save-slot .slot-info .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #888;
+  line-height: 1.8;
+}
+.save-slot .slot-actions {
+  display: flex; gap: 8px;
+}
+.save-slot .slot-actions button {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 8px 18px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.save-slot .slot-actions button:hover { background: var(--gold); color: var(--ink); }
+.save-slot .slot-actions button.danger { border-color: var(--blood); color: var(--blood); }
+.save-slot .slot-actions button.danger:hover { background: var(--blood); color: var(--paper); }
+.save-slot.empty .slot-info .title { color: #555; font-style: italic; }
+
+/* 章节选择 */
+.chapters-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.chapter-card {
+  background: linear-gradient(160deg, rgba(20,22,30,0.9), rgba(10,10,12,0.95));
+  border: 1px solid rgba(200,169,106,0.25);
+  padding: 32px 30px;
+  cursor: pointer;
+  transition: 0.4s cubic-bezier(.16,1,.3,1);
+  position: relative;
+  overflow: hidden;
+}
+.chapter-card:not(.locked):hover {
+  transform: translateY(-6px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 30px rgba(200,169,106,0.15);
+}
+.chapter-card.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.chapter-card::after {
+  content: attr(data-num);
+  position: absolute;
+  right: -20px; bottom: -60px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 200px;
+  color: rgba(200,169,106,0.05);
+  line-height: 1;
+  pointer-events: none;
+}
+.chapter-card .ch-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.chapter-card h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+  margin-bottom: 6px;
+}
+.chapter-card .ch-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--blood);
+  margin-bottom: 14px;
+}
+.chapter-card .ch-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: #888;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(200,169,106,0.25);
+  margin-top: 14px;
+}
+.chapter-card .ch-desc {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 13px;
+  line-height: 1.9;
+  letter-spacing: 0.05em;
+  color: #aaa;
+  position: relative;
+  z-index: 1;
+}
+.chapter-lock {
+  position: absolute;
+  top: 14px; right: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--blood);
+}
