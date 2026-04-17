@@ -10,10 +10,13 @@
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/op.css">
 <link rel="stylesheet" href="css/scene.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/battle.css">
+<link rel="stylesheet" href="css/map.css">
+<link rel="stylesheet" href="css/archive.css">
 </head>
 <body>
 
-<!-- Boot / CRT 启动 -->
 <div id="boot" class="boot">
   <div class="scanlines"></div>
   <div class="crt-text">
@@ -25,30 +28,21 @@
   </div>
 </div>
 
-<!-- OP 动画 -->
 <div id="op" class="op hidden">
   <div class="op-bg"></div>
   <div class="op-noise"></div>
   <div class="op-vignette"></div>
-
   <div class="op-shimmer"></div>
-
-  <!-- 蝉 层 -->
   <div class="cicada-layer">
     <div class="cicada c1">蝉</div>
     <div class="cicada c2">蝉</div>
     <div class="cicada c3">蝉</div>
   </div>
-
-  <!-- OP 主序列 -->
   <div class="op-sequence">
-    <!-- Scene 1: 1999 -->
     <div class="op-scene scene-1">
       <div class="big-year">1999</div>
       <div class="year-sub">—— 夏 ——</div>
     </div>
-
-    <!-- Scene 2: 哲学症 -->
     <div class="op-scene scene-2">
       <div class="diagnosis">
         <span class="stamp">診 断</span>
@@ -56,8 +50,6 @@
         <p class="jp-sub">Philosophia Morbi</p>
       </div>
     </div>
-
-    <!-- Scene 3: 角色剪影 -->
     <div class="op-scene scene-3">
       <div class="silhouettes">
         <div class="silh s-haku" data-name="夏目 珀"></div>
@@ -67,8 +59,6 @@
       </div>
       <div class="silh-quote">——僕らはシーシュポスが幸福であると想像しなければならない。</div>
     </div>
-
-    <!-- Scene 4: 题字 -->
     <div class="op-scene scene-4">
       <div class="title-block">
         <div class="title-jp">世紀末異郷人</div>
@@ -77,82 +67,100 @@
       </div>
     </div>
   </div>
-
   <button id="skip-op" class="skip-op">SKIP ▸</button>
 </div>
 
-<!-- 主菜单 -->
 <div id="menu" class="menu hidden">
   <div class="menu-bg"></div>
   <div class="menu-noise"></div>
-
   <div class="menu-left">
     <div class="brand">
       <div class="brand-jp">世紀末異郷人</div>
       <div class="brand-en">SEIKIMATSU · IHOUJIN</div>
       <div class="brand-line"></div>
-      <div class="brand-sub">1999 / 7 / 13 ——<br>堤防にて、第327回目の生存確認。</div>
+      <div class="brand-sub" id="brand-sub">1999 / 7 / 13 ——<br>堤防にて、第327回目の生存確認。</div>
     </div>
-
     <nav class="menu-nav">
-      <button data-go="prologue" class="nav-item">
+      <button data-go="continue" class="nav-item" id="nav-continue">
+        <span class="num">→</span>
+        <span class="label">CONTINUE</span>
+        <span class="label-jp" id="continue-label">—— 続きから ——</span>
+      </button>
+      <button data-go="story" class="nav-item">
         <span class="num">01</span>
-        <span class="label">PROLOGUE</span>
-        <span class="label-jp">異郷人・覚醒</span>
+        <span class="label">STORY</span>
+        <span class="label-jp">章を選ぶ</span>
+      </button>
+      <button data-go="map" class="nav-item">
+        <span class="num">02</span>
+        <span class="label">KAICHŌ MAP</span>
+        <span class="label-jp">櫂町・探索</span>
       </button>
       <button data-go="characters" class="nav-item">
-        <span class="num">02</span>
+        <span class="num">03</span>
         <span class="label">DRAMATIS PERSONAE</span>
         <span class="label-jp">論証者 名鑑</span>
       </button>
       <button data-go="codex" class="nav-item">
-        <span class="num">03</span>
-        <span class="label">CODEX</span>
-        <span class="label-jp">哲学症・用語集</span>
-      </button>
-      <button data-go="battle" class="nav-item">
         <span class="num">04</span>
-        <span class="label">命題展開</span>
-        <span class="label-jp">—— 宣言せよ ——</span>
+        <span class="label">CODEX</span>
+        <span class="label-jp">用語集</span>
+      </button>
+      <button data-go="archive" class="nav-item">
+        <span class="num">05</span>
+        <span class="label">CRYSTAL ARCHIVE</span>
+        <span class="label-jp">理論結晶・書庫</span>
+      </button>
+      <button data-go="save" class="nav-item">
+        <span class="num">06</span>
+        <span class="label">SAVE / LOAD</span>
+        <span class="label-jp">記録</span>
       </button>
     </nav>
   </div>
-
   <div class="menu-right">
-    <div class="file-card">
+    <div class="file-card" id="file-card">
       <div class="file-header">
         <span>CASE FILE</span>
         <span class="file-id">K-1999-0701</span>
       </div>
-      <div class="file-body">
+      <div class="file-body" id="file-body">
         <p>患者: 夏目 珀 / 17 / 櫂町高校 2-3</p>
         <p>思想源流: Albert Camus</p>
         <p>能力: 西シーシュポスの愉しみ</p>
-        <p>記録死亡回数: <span class="count">327</span></p>
+        <p>記録死亡回数: <span class="count" id="death-meter">327</span></p>
+        <p>逻各斯: <span id="logos-meter">80</span> 赫</p>
         <p class="warn">※ 結晶化リスク: 低</p>
       </div>
       <div class="file-footer">厚生省 第九課</div>
     </div>
-
     <div class="quote-box">
       <p>「—— 僕らは、シーシュポスが幸福であると<br>想像しなければならない。」</p>
       <span>A. Camus</span>
     </div>
   </div>
-
   <div class="menu-footer">
     <span>© 1999 Kaichō Archive</span>
     <span class="blink">● REC</span>
-    <span>SHIFT-JIS / UTF-8</span>
+    <span id="save-status">UTF-8 / NO SAVE</span>
   </div>
 </div>
 
-<!-- 场景/剧情容器 -->
 <div id="scene" class="scene hidden"></div>
+<div id="vn" class="vn hidden"></div>
+<div id="map" class="map-view hidden"></div>
 
 <audio id="bgm" loop></audio>
 
 <script src="js/data.js"></script>
+<script src="js/chapters.js"></script>
+<script src="js/battles.js"></script>
+<script src="js/crystals.js"></script>
+<script src="js/save.js"></script>
+<script src="js/vn.js"></script>
+<script src="js/map.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/archive.js"></script>
 <script src="js/op.js"></script>
 <script src="js/scene.js"></script>
 <script src="js/main.js"></script>
